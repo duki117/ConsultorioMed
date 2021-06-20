@@ -5,12 +5,16 @@ const HistorialSchema = Schema ({
         type:String,
         required: true
     },
-    motivo:{
+    diag:{
         type:String,
         required: true
     },
-    contacto:{
+    medic:{
         type:String,
+        required: true
+    },
+    fecha:{
+        type: String,
         required: true
     }
 });

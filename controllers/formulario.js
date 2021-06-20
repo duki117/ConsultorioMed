@@ -1,43 +1,42 @@
 const { response, request } = require('express');
+const expClin = require('../models/expClin');
 const Formulario = require('../models/formulario');
 
-const formularioGet = (req = request, res = response) => {
 
-    const { q, nombre = 'No name', apikey, page = 1, limit } = req.query;
+const formularioGet = async (req = request, res = response) => {
+    const {clave = 1} = req.query;
+    const formulario = await Formulario.find({clave})
 
-    res.json({
-        msg: 'get API - controlador',
-        q,
-        nombre,
-        apikey,
-        page, 
-        limit
-    });
+    res.json({formulario});
 }
 
-let hstMotivo = 'Aun no hay información';
+const formularioPost = (req, res = response) => {
 
-const formularioPost = async (req, res = response) => {
+        expClin.findOne({ estado: true }, async (err, expClin) => {
+            let clave = expClin.clave;
+            
+            if (err) return res.status(500).send('Server error!');
+            
+            const {name, motivo, peso, talla, temperatura, preArterial, pulso} = req.body;
+            
+            if(name === expClin.name){
+                const formulario = new Formulario({clave, name, motivo, peso, talla, temperatura, preArterial, pulso});
 
-    const {motivo, peso, talla, temperatura, preArterial, pulso} = req.body;
-    const formulario = new Formulario({motivo, peso, talla, temperatura, preArterial, pulso});
+                await formulario.save();
 
-    hstMotivo = motivo;
-   
-
-    await formulario.save();
-
-    res.json({
-        msg: 'post API - formularioPost',
-        formulario: formulario,
-        motivo: hstMotivo
-    });
+                res.json({
+                     formulario
+                });
+            }else{
+                res.status(409).send({ message: 'Está persona no esta dada de alta en el sistema.' });
+            }
+            
+        });
 }
 
 
 
 module.exports = {
     formularioGet,
-    formularioPost,
-    hstMotivo
+    formularioPost
 }

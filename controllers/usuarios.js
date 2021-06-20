@@ -1,21 +1,8 @@
 const { response, request } = require('express');
-//const bcryptjs = require('bcryptjs');
+const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'secretkey123456';
 const Usuario = require('../models/usuario');
-//const { validationResult } = require('express-validator');
-
-const usuariosGet = (req = request, res = response) => {
-
-    const { q, nombre = 'No name', apikey, page = 1, limit } = req.query;
-
-    res.json({
-        msg: 'get API - controlador',
-        q,
-        nombre,
-        apikey,
-        page, 
-        limit
-    });
-}
 
 const usuariosPost = async (req, res = response) => {
     /*
@@ -45,48 +32,31 @@ const usuariosPost = async (req, res = response) => {
         usuario: usuario
     });
     */
-    
-    const body = req.body;
-    const usuario = new Usuario(body);
 
+
+
+    const nombre = req.body.nombre;
+    const correo = req.body.correo;
+    const password = bcryptjs.hashSync(req.body.password);
+    const role = req.body.role;
+    
+    const usuario = new Usuario({nombre, correo, password, role});
+
+    //Veificar si el correo existe
+    const existeEmail = await Usuario.findOne({ correo });
+    if(existeEmail){
+        return res.status(400).json({
+            msg: 'Ese correo ya esta registrado'
+        })
+    }
     await usuario.save();
 
     res.json({
-        msg: 'post API - formularioPost',
-        usuario: usuario,
+        usuario
     });
     
 }
 
-const usuariosPut = (req, res = response) => {
-
-    const { id } = req.params;
-
-    res.json({
-        msg: 'put API - usuariosPut',
-        id
-    });
-}
-
-const usuariosPatch = (req, res = response) => {
-    res.json({
-        msg: 'patch API - usuariosPatch'
-    });
-}
-
-const usuariosDelete = (req, res = response) => {
-    res.json({
-        msg: 'delete API - usuariosDelete'
-    });
-}
-
-
-
-
 module.exports = {
-    usuariosGet,
-    usuariosPost,
-    usuariosPut,
-    usuariosPatch,
-    usuariosDelete,
+    usuariosPost
 }

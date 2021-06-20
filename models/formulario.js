@@ -1,6 +1,15 @@
 const { Schema, model } = require('mongoose');
 
 const FormularioSchema = Schema ({
+    clave:{
+        type: Number,
+        required: true 
+    },
+    name:{
+        type: String,
+        required: true,
+        trim: true
+    },
     motivo:{
         type: String,
         required: true,
@@ -30,7 +39,11 @@ const FormularioSchema = Schema ({
         type: String,
         required: true,
         trim: true
-    }
+    },
+    estado:{
+        type: Boolean,
+        default: true
+      }
 });
 
 module.exports = model('Formularios', FormularioSchema);

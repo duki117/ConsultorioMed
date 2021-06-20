@@ -8,7 +8,7 @@ const router = Router();
 
 router.get('/', expClinGet );
 
-router.put('/:id', expClinPut );
+router.put('/', expClinPut );
 
 router.post('/', expClinPost );
 

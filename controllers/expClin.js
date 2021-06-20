@@ -1,55 +1,64 @@
 const { response, request } = require('express');
 const ExpClin = require('../models/expClin');
+//const IdPac = require('../models/idPac');
 
-const expClinGet = (req = request, res = response) => {
+const expClinGet = async (req = request, res = response) => {
 
-    const { q, nombre = 'No name', apikey, page = 1, limit } = req.query;
+    const {clave = 1} = req.query;
+    const expClin = await ExpClin.find({clave})
 
-    res.json({
-        msg: 'get API - controlador',
-        q,
-        nombre,
-        apikey,
-        page, 
-        limit
-    });
+    res.json({expClin});
 }
 
-let hstNombre = 'Aun no hay información';
+//let hstNombre = 'Aun no hay información';
+//let id_p = 'Aun no hay id';
 
 const expClinPost = async (req, res = response) => {
-
-    const {name, genero, ocupa, lNac, nac, alim, habitos, 
+    
+    const {clave,name, genero, ocupa, lNac, nac, alim, habitos, 
     alergias, antMed, antPad, diagAnt, medAnt} = req.body;
-
-    const expClin = new ExpClin ({name, genero, ocupa, lNac, nac, alim, habitos, 
+    const expClin = new ExpClin ({clave,name, genero, ocupa, lNac, nac, alim, habitos, 
         alergias, antMed, antPad, diagAnt, medAnt});
 
-    const hstNombre = name;    
-
     await expClin.save();
-
+  
     res.json({
-        msg: 'post API - formularioPost',
+        msg: 'post API - ExpedienteClinicoPost',
         expClin: expClin,
-        nombre: hstNombre
     });
 }
 
 
-const expClinPut = (req, res = response) => {
+const expClinPut = async (req, res = response) => {
 
-    const { id } = req.params;
+    const { clave, diagAnt, medAnt} = req.body;
+    console.log(clave);
 
+    const expclin = await ExpClin.findOneAndUpdate(
+        {
+            clave: clave
+        },
+        {
+            diagAnt: diagAnt, 
+            medAnt: medAnt
+        },
+        {
+            upsert: true,
+            new: true
+        }, (err, doc) => {
+        if (err) {
+            console.log("Something wrong when updating data!");
+        }
+        console.log(doc);
+    });
+        
     res.json({
-        msg: 'put API - usuariosPut',
-        id
+        expclin
     });
 }
 
 module.exports = {
     expClinGet,
     expClinPost,
-    expClinPut,
-    hstNombre
+    expClinPut
 }

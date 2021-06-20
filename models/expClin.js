@@ -1,6 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const ExpClinSchema = Schema({
+    clave:{
+      type: Number,
+      require: true
+    },
     name: {
         type: String,
         required: true,
@@ -60,6 +64,10 @@ const ExpClinSchema = Schema({
         type: String,
         required: true,
         trim: true
+      },
+      estado:{
+        type: Boolean,
+        default: true
       }
 });
 

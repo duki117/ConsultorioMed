@@ -1,32 +1,30 @@
 const { response, request } = require('express');
 const Historial = require('../models/historial');
-const { hstNombre } = require('./expClin');
-const { hstMotivo } = require('./formulario');
+const expClin = require('../models/expClin');
 
-const historialGet = (req = request, res = response) => {
 
-    const { q, nombre = 'No name', apikey, page = 1, limit } = req.query;
+const historialGet = async (req = request, res = response) => {
+    
+    const historial = await Historial.find();
 
-    res.json({
-        msg: 'get API - controlador',
-        q,
-        nombre,
-        apikey,
-        page, 
-        limit
-    });
+    res.json({historial});
 }
 
 const historialPost = async (req, res = response) => {
 
-    const {fecha } = req.body;
-    const historial = new Historial (hstNombre, hstMotivo, fecha );
+    expClin.findOne({ estado: true }, async (err, expClin) => {
+        let nombre = expClin.name;
+        let diag = expClin.diagAnt;
+        let medic = expClin.medAnt;
+        
+        if (err) return res.status(500).send('Server error!');
+        
+        const {fecha} = req.body;
+        const historial = new Historial ({nombre, diag, medic, fecha });
+        await historial.save();
 
-    await historial.save();
 
-    res.json({
-        msg: 'post API - HistorialPost',
-        historial: historial
+        res.json({historial});
     });
 }
 
