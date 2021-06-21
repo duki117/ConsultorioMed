@@ -14,6 +14,30 @@ router.post('/registro',[
     validarCampos
 ], usuariosPost );
 
-//router.post('/login', usuariosLogin );
+router.post('/login',[
+    check('correo', 'El correo es obligatorio').isEmail(),
+    check('password', 'La contraseña es obligatoria').not().isEmpty(),
+    validarCampos
+] ,usuariosLogin );
+
+/*
+router.post("/login", passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login"
+  }));
+
+router.get("/private-page", (req, res) => {
+    if (!req.user) {
+      res.redirect('/login'); // not logged-in
+      return;
+    }
+    
+    // ok, req.user is defined
+    res.render("public", { user: req.user });
+});
+
+*/
+
+
 
 module.exports = router;
